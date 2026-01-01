@@ -1,1 +1,1 @@
-#sequelize with database relation
+# Sequelize with database relation
