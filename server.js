@@ -21,7 +21,7 @@ app.use("/api", userRoutes);
 // db connections
 const dbConnection = async () => {
   try {
-    await sequelize.sync({ force: false });
+    await sequelize.sync({ alter: false });
     console.log("db connection successful");
   } catch (error) {
     console.error("Unable to  connect to the database:", error);
