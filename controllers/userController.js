@@ -4,6 +4,7 @@ import { UserModel } from "../models/UserModel.js";
 import { Op } from "sequelize";
 import { ProfileModel } from "../models/ProfileModel.js";
 import { BlogModel } from "../models/BlogModel.js";
+import { CourseModel } from "../models/CourseModel.js";
 
 export const createUser = async (req, res) => {
   const { username, email, password } = req.body;
@@ -74,6 +75,33 @@ export const getUserAllData = async (req, res) => {
       return res.status(400).json({ message: "not user data found" });
     const { password: _, ...safeData } = userAllData.toJSON();
     return res.status(200).json({ message: "user all data", safeData });
+  } catch (error) {
+    return res.status(500).json({ message: "internal server error", error });
+  }
+};
+
+export const courseEnrollent = async (req, res) => {
+  const { courseId } = req.body;
+  try {
+    // find user
+    const user = await UserModel.findByPk(req.user.id, { attributes: ["id"] });
+    // user validation
+
+    if (!user) return res.status(401).json({ message: "unauthorized" });
+    // find course
+    const course = await CourseModel.findOne({
+      where: { id: courseId },
+      attributes: ["id", "title"],
+    });
+    //  course validation
+    if (!course) return res.status(400).json({ message: "course not found" });
+    const alreadyEnrolled = await user.hasCourse(course);
+    if (alreadyEnrolled)
+      return res
+        .status(409)
+        .json({ message: `already enrolled with course ${course.title}` });
+    await user.addCourse(course);
+    return res.status(200).json({ message: "enrollment successful" });
   } catch (error) {
     return res.status(500).json({ message: "internal server error", error });
   }

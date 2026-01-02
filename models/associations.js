@@ -1,6 +1,7 @@
 import { UserModel } from "./UserModel.js";
 import { ProfileModel } from "./ProfileModel.js";
 import { BlogModel } from "./BlogModel.js";
+import { CourseModel } from "./CourseModel.js";
 
 // one to one relationships
 UserModel.hasOne(ProfileModel, {
@@ -24,3 +25,6 @@ BlogModel.belongsTo(UserModel, {
   onDelete: "CASCADE",
   onUpdate: "CASCADE",
 });
+// many to many relationships
+UserModel.belongsToMany(CourseModel, { through: "UserCourses" });
+CourseModel.belongsToMany(UserModel, { through: "UserCourses" });
